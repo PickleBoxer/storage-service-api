@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,5 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // Media routes will be added in Phase 3
+    // Media routes
+    Route::post('/media', MediaController::class);
 });
