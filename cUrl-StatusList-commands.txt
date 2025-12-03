@@ -1,0 +1,59 @@
+# Storage Service API - Status & List API Testing Commands
+
+# ==========================================
+# 1. Check media status (GET /api/media/{id}/status)
+# ==========================================
+curl https://storage-service-api.test/api/media/$MEDIA_ID/status \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -k
+
+# Expected Response (Pending):
+# {
+#   "data": {
+#     "id": 1,
+#     "type": "image",
+#     "title": "Test Media for Status",
+#     "description": "Testing",
+#     "status": "pending",
+#     "created_at": "2025-12-03T12:00:00Z"
+#   }
+# }
+
+# ==========================================
+# 2. List all user's media (GET /api/media)
+# ==========================================
+curl https://storage-service-api.test/api/media \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -k
+
+# Expected Response:
+# {
+#   "data": [
+#     {
+#       "id": 3,
+#       "type": "video",
+#       "title": "Latest Video",
+#       "status": "completed",
+#       "thumbnail_url": "https://storage-service-api.test/storage/thumbnails/videos/1/...",
+#       "created_at": "2025-12-03T12:05:00Z"
+#     },
+#     {
+#       "id": 2,
+#       "type": "image",
+#       "title": "Second Image",
+#       "status": "processing",
+#       "thumbnail_url": null,
+#       "created_at": "2025-12-03T12:02:00Z"
+#     },
+#     {
+#       "id": 1,
+#       "type": "image",
+#       "title": "First Image",
+#       "status": "completed",
+#       "thumbnail_url": "https://storage-service-api.test/storage/thumbnails/images/1/...",
+#       "created_at": "2025-12-03T12:00:00Z"
+#     }
+#   ]
+# }

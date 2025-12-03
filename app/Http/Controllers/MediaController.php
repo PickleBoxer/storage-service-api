@@ -5,13 +5,29 @@ namespace App\Http\Controllers;
 use App\Enums\MediaStatus;
 use App\Enums\MediaType;
 use App\Http\Requests\StoreMediaRequest;
+use App\Http\Resources\MediaCollection;
+use App\Http\Resources\MediaResource;
 use App\Jobs\ProcessMediaJob;
 use App\Models\Media;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class MediaController extends Controller
 {
-    public function __invoke(StoreMediaRequest $request)
+    use AuthorizesRequests;
+
+    public function index()
     {
+        $this->authorize('viewAny', Media::class);
+
+        $media = auth()->user()->media()->latest()->get();
+
+        return new MediaCollection($media);
+    }
+
+    public function store(StoreMediaRequest $request)
+    {
+        $this->authorize('create', Media::class);
+
         $file = $request->file('file');
         $user = $request->user();
 
@@ -53,5 +69,13 @@ class MediaController extends Controller
                 'created_at' => $media->created_at,
             ],
         ], 202);
+    }
+
+    public function status(Media $media)
+    {
+        // Authorization check using policy
+        $this->authorize('view', $media);
+
+        return new MediaResource($media);
     }
 }

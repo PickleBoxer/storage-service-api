@@ -16,5 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Media routes
-    Route::post('/media', MediaController::class);
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::post('/media', [MediaController::class, 'store']);
+    Route::get('/media/{media}/status', [MediaController::class, 'status']);
 });
