@@ -56,7 +56,7 @@ class MediaController extends Controller
         ]);
 
         // Dispatch background job for thumbnail generation
-        // ProcessMediaJob::dispatch($media);
+        ProcessMediaJob::dispatch($media);
 
         // Return 202 Accepted with media details
         return response()->json([

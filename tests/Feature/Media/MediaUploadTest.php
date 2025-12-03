@@ -2,9 +2,11 @@
 
 use App\Enums\MediaStatus;
 use App\Enums\MediaType;
+use App\Jobs\ProcessMediaJob;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -13,6 +15,7 @@ use function Pest\Laravel\postJson;
 
 beforeEach(function () {
     Storage::fake('public');
+    Queue::fake();
 });
 
 test('authenticated user can upload image file', function () {
