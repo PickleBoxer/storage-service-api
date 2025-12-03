@@ -77,37 +77,215 @@ composer test
 
 **Interactive API documentation is available at:** [http://storage-service-api.test/docs/api](http://storage-service-api.test/docs/api)
 
-### Quick Examples
+### Authentication
+
+This API uses **Laravel Sanctum** for token-based authentication. All protected endpoints require a valid Bearer token.
+
+#### How to Obtain a Token
+
+**Option 1: Register a new user**
+```bash
+POST /api/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "token": "1|abc123def456..."
+}
+```
+
+**Option 2: Login with existing credentials**
+```bash
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "token": "2|xyz789abc123..."
+}
+```
+
+#### Using the Token
+
+Include the token in the `Authorization` header for all protected endpoints:
 
 ```bash
-# Register
+Authorization: Bearer {your-token-here}
+```
+
+**Token Details:**
+- Tokens don't expire by default (configurable in `config/sanctum.php`)
+- Each login/registration generates a new token
+- Tokens are stored in the `personal_access_tokens` table
+- Users can have multiple active tokens
+
+### API Endpoints
+
+#### Public Endpoints (No Authentication)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/register` | Register new user |
+| POST | `/api/login` | Login existing user |
+
+#### Protected Endpoints (Require Token)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/user` | Get authenticated user |
+| GET | `/api/media` | List user's media |
+| POST | `/api/media` | Upload media file |
+| GET | `/api/media/{id}/status` | Check processing status |
+
+### Request Examples
+
+#### 1. Register User
+```bash
 curl -X POST http://storage-service-api.test/api/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"John","email":"john@example.com","password":"password123","password_confirmation":"password123"}'
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+```
 
-# Login
+**Request Body:**
+- `name` (required, string, max:255)
+- `email` (required, email, unique)
+- `password` (required, min:8)
+- `password_confirmation` (required, must match password)
+
+#### 2. Login
+```bash
 curl -X POST http://storage-service-api.test/api/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}'
-
-# Get user
-curl http://storage-service-api.test/api/user \
-  -H "Authorization: Bearer {token}"
-
-# Upload media
-curl -X POST http://storage-service-api.test/api/media \
-  -H "Authorization: Bearer {token}" \
-  -F "file=@image.jpg" \
-  -F "title=My Photo"
-
-# List media
-curl http://storage-service-api.test/api/media \
-  -H "Authorization: Bearer {token}"
-
-# Check status
-curl http://storage-service-api.test/api/media/1/status \
-  -H "Authorization: Bearer {token}"
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
 ```
+
+**Request Body:**
+- `email` (required, email)
+- `password` (required)
+
+#### 3. Get Authenticated User
+```bash
+curl http://storage-service-api.test/api/user \
+  -H "Authorization: Bearer 1|abc123def456..."
+```
+
+#### 4. Upload Media
+```bash
+curl -X POST http://storage-service-api.test/api/media \
+  -H "Authorization: Bearer 1|abc123def456..." \
+  -F "file=@/path/to/image.jpg" \
+  -F "title=Beautiful Sunset" \
+  -F "description=Optional description"
+```
+
+**Request Body (multipart/form-data):**
+- `file` (required, file, mimes:jpg,jpeg,png,gif,webp,mp4,mov,avi, max:102400KB)
+- `title` (required, string, max:255)
+- `description` (optional, string)
+
+**Response (202 Accepted):**
+```json
+{
+  "message": "Media uploaded successfully. Processing in background.",
+  "data": {
+    "id": 1,
+    "type": "image",
+    "title": "Beautiful Sunset",
+    "status": "pending",
+    "created_at": "2025-12-03T10:35:00.000000Z"
+  }
+}
+```
+
+#### 5. List Media
+```bash
+curl http://storage-service-api.test/api/media \
+  -H "Authorization: Bearer 1|abc123def456..."
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "type": "image",
+      "title": "Beautiful Sunset",
+      "status": "completed",
+      "file_url": "http://storage-service-api.test/storage/media/images/1/...",
+      "thumbnail_url": "http://storage-service-api.test/storage/thumbnails/images/1/..."
+    }
+  ]
+}
+```
+
+#### 6. Check Processing Status
+```bash
+curl http://storage-service-api.test/api/media/1/status \
+  -H "Authorization: Bearer 1|abc123def456..."
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 1,
+    "type": "image",
+    "title": "Beautiful Sunset",
+    "status": "completed",
+    "file_url": "http://storage-service-api.test/storage/media/images/1/...",
+    "thumbnail_url": "http://storage-service-api.test/storage/thumbnails/images/1/..."
+  }
+}
+```
+
+**Status Values:**
+- `pending` - File uploaded, thumbnail generation queued
+- `processing` - Thumbnail is being generated
+- `completed` - Thumbnail generated successfully
+- `failed` - Thumbnail generation failed
+
+### Testing the API
+
+Use the provided cURL examples or import the endpoints into:
+- **Postman** - Create a collection with environment variable for token
+- **Insomnia** - Use Bearer token authentication
+- **Thunder Client (VS Code)** - Set Auth type to Bearer Token
+- **HTTPie** - Use `http POST url Authorization:"Bearer token"`
 
 ## Async Processing Flow
 
