@@ -3,7 +3,7 @@
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
-test('authenticated user can access their profile', function () {
+test('authenticated user can access their profile', function (): void {
     // Arrange
     $user = User::factory()->create([
         'name' => 'John Doe',
@@ -24,7 +24,7 @@ test('authenticated user can access their profile', function () {
         ]);
 });
 
-test('unauthenticated user cannot access profile endpoint', function () {
+test('unauthenticated user cannot access profile endpoint', function (): void {
     // Act
     $response = $this->getJson('/api/user');
 
@@ -35,7 +35,7 @@ test('unauthenticated user cannot access profile endpoint', function () {
         ]);
 });
 
-test('authenticated user data includes all expected fields', function () {
+test('authenticated user data includes all expected fields', function (): void {
     // Arrange
     $user = User::factory()->create();
     Sanctum::actingAs($user);
@@ -55,7 +55,7 @@ test('authenticated user data includes all expected fields', function () {
         ]);
 });
 
-test('user can access profile with valid token from login', function () {
+test('user can access profile with valid token from login', function (): void {
     // Arrange
     $user = User::factory()->create([
         'email' => 'john@example.com',
@@ -81,7 +81,7 @@ test('user can access profile with valid token from login', function () {
         ]);
 });
 
-test('user cannot access profile with invalid token', function () {
+test('user cannot access profile with invalid token', function (): void {
     // Act
     $response = $this->withToken('invalid-token')->getJson('/api/user');
 
@@ -89,7 +89,7 @@ test('user cannot access profile with invalid token', function () {
     $response->assertStatus(401);
 });
 
-test('user can access profile with token from registration', function () {
+test('user can access profile with token from registration', function (): void {
     // Arrange
     $userData = [
         'name' => 'Jane Doe',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Enums\MediaStatus;
@@ -17,7 +19,9 @@ class ProcessMediaJob implements ShouldQueue
     use Queueable;
 
     public $tries = 3;
+
     public $timeout = 120;
+
     public $backoff = [10, 30];
 
     /**
@@ -97,6 +101,7 @@ class ProcessMediaJob implements ShouldQueue
         $video = $ffmpeg->open($filePath);
 
         // Extract frame at 1 second
+        // @phpstan-ignore-next-line
         $frame = $video->frame(TimeCode::fromSeconds(1));
 
         // Generate thumbnail filename
@@ -122,7 +127,7 @@ class ProcessMediaJob implements ShouldQueue
     {
         $pathInfo = pathinfo($this->media->file_path);
 
-        return $pathInfo['filename'] . '_thumb.jpg';
+        return $pathInfo['filename'].'_thumb.jpg';
     }
 
     public function failed(\Throwable $exception): void

@@ -5,7 +5,7 @@ use App\Enums\MediaType;
 use App\Models\Media;
 use App\Models\User;
 
-test('media factory creates completed media by default', function () {
+test('media factory creates completed media by default', function (): void {
     $media = Media::factory()->create();
 
     expect($media->status)->toBe(MediaStatus::Completed)
@@ -13,35 +13,35 @@ test('media factory creates completed media by default', function () {
         ->and($media->processing_error)->toBeNull();
 });
 
-test('media factory creates image type media', function () {
+test('media factory creates image type media', function (): void {
     $media = Media::factory()->create();
 
     expect($media->type)->toBeInstanceOf(MediaType::class)
         ->and($media->type)->toBeIn([MediaType::Image, MediaType::Video]);
 });
 
-test('media factory creates media with user', function () {
+test('media factory creates media with user', function (): void {
     $media = Media::factory()->create();
 
     expect($media->user)->toBeInstanceOf(User::class)
         ->and($media->user_id)->toBeInt();
 });
 
-test('media factory creates media with title and description', function () {
+test('media factory creates media with title and description', function (): void {
     $media = Media::factory()->create();
 
     expect($media->title)->toBeString()->not->toBeEmpty()
         ->and($media->description)->toBeString()->not->toBeEmpty();
 });
 
-test('media factory creates media with file paths', function () {
+test('media factory creates media with file paths', function (): void {
     $media = Media::factory()->create();
 
     expect($media->file_path)->toBeString()->not->toBeEmpty()
         ->and($media->thumbnail_path)->toBeString()->not->toBeEmpty();
 });
 
-test('media factory pending state creates media without thumbnail', function () {
+test('media factory pending state creates media without thumbnail', function (): void {
     $media = Media::factory()->pending()->create();
 
     expect($media->status)->toBe(MediaStatus::Pending)
@@ -49,7 +49,7 @@ test('media factory pending state creates media without thumbnail', function () 
         ->and($media->processing_error)->toBeNull();
 });
 
-test('media factory failed state creates media with error', function () {
+test('media factory failed state creates media with error', function (): void {
     $media = Media::factory()->failed()->create();
 
     expect($media->status)->toBe(MediaStatus::Failed)
@@ -57,13 +57,13 @@ test('media factory failed state creates media with error', function () {
         ->and($media->processing_error)->toBe('Test error message');
 });
 
-test('media factory can create multiple media records', function () {
+test('media factory can create multiple media records', function (): void {
     $mediaCollection = Media::factory()->count(5)->create();
 
     expect($mediaCollection)->toHaveCount(5);
 });
 
-test('media factory can create media for specific user', function () {
+test('media factory can create media for specific user', function (): void {
     $user = User::factory()->create();
 
     $media = Media::factory()->create(['user_id' => $user->id]);
@@ -72,7 +72,7 @@ test('media factory can create media for specific user', function () {
         ->and($media->user->id)->toBe($user->id);
 });
 
-test('media factory file path matches type', function () {
+test('media factory file path matches type', function (): void {
     $media = Media::factory()->create();
 
     if ($media->type === MediaType::Image) {
@@ -82,7 +82,7 @@ test('media factory file path matches type', function () {
     }
 });
 
-test('media factory thumbnail path matches type', function () {
+test('media factory thumbnail path matches type', function (): void {
     $media = Media::factory()->create();
 
     if ($media->type === MediaType::Image) {
@@ -92,7 +92,7 @@ test('media factory thumbnail path matches type', function () {
     }
 });
 
-test('media factory can override default attributes', function () {
+test('media factory can override default attributes', function (): void {
     $media = Media::factory()->create([
         'title' => 'Custom Title',
         'description' => 'Custom Description',
@@ -102,7 +102,7 @@ test('media factory can override default attributes', function () {
         ->and($media->description)->toBe('Custom Description');
 });
 
-test('media factory can create pending media and then update to completed', function () {
+test('media factory can create pending media and then update to completed', function (): void {
     $media = Media::factory()->pending()->create();
 
     expect($media->status)->toBe(MediaStatus::Pending);
@@ -116,7 +116,7 @@ test('media factory can create pending media and then update to completed', func
         ->and($media->fresh()->thumbnail_path)->toBe('thumbnails/test_thumb.jpg');
 });
 
-test('media factory can create failed media with custom error', function () {
+test('media factory can create failed media with custom error', function (): void {
     $media = Media::factory()->failed()->create([
         'processing_error' => 'Custom error message',
     ]);

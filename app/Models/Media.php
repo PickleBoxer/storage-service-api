@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\MediaStatus;
@@ -8,6 +10,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property MediaType $type
+ * @property string $title
+ * @property string|null $description
+ * @property string $file_path
+ * @property string|null $thumbnail_path
+ * @property MediaStatus $status
+ * @property string|null $processing_error
+ */
 class Media extends Model
 {
     /** @use HasFactory<\Database\Factories\MediaFactory> */
@@ -62,14 +75,14 @@ class Media extends Model
     public function getFileUrlAttribute(): ?string
     {
         return $this->file_path
-            ? asset('storage/' . $this->file_path)
+            ? asset('storage/'.$this->file_path)
             : null;
     }
 
     public function getThumbnailUrlAttribute(): ?string
     {
         return $this->thumbnail_path
-            ? asset('storage/' . $this->thumbnail_path)
+            ? asset('storage/'.$this->thumbnail_path)
             : null;
     }
 }

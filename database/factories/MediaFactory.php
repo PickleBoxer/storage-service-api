@@ -26,8 +26,8 @@ class MediaFactory extends Factory
             'type' => $type,
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),
-            'file_path' => 'media/' . $type->value . 's/test_file.jpg',
-            'thumbnail_path' => 'thumbnails/' . $type->value . 's/test_thumb.jpg',
+            'file_path' => 'media/'.$type->value.'s/test_file.jpg',
+            'thumbnail_path' => 'thumbnails/'.$type->value.'s/test_thumb.jpg',
             'status' => MediaStatus::Completed,
             'processing_error' => null,
         ];

@@ -1,9 +1,8 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
-test('user can login with valid credentials', function () {
+test('user can login with valid credentials', function (): void {
     // Arrange
     $user = User::factory()->create([
         'email' => 'john@example.com',
@@ -34,7 +33,7 @@ test('user can login with valid credentials', function () {
     expect($response['token'])->toBeString()->not->toBeEmpty();
 });
 
-test('user cannot login with incorrect password', function () {
+test('user cannot login with incorrect password', function (): void {
     // Arrange
     User::factory()->create([
         'email' => 'john@example.com',
@@ -54,7 +53,7 @@ test('user cannot login with incorrect password', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('user cannot login with non-existent email', function () {
+test('user cannot login with non-existent email', function (): void {
     // Arrange
     $credentials = [
         'email' => 'nonexistent@example.com',
@@ -69,7 +68,7 @@ test('user cannot login with non-existent email', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('login requires email', function () {
+test('login requires email', function (): void {
     // Arrange
     $credentials = [
         'password' => 'password123',
@@ -83,7 +82,7 @@ test('login requires email', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('login requires password', function () {
+test('login requires password', function (): void {
     // Arrange
     $credentials = [
         'email' => 'john@example.com',
@@ -97,7 +96,7 @@ test('login requires password', function () {
         ->assertJsonValidationErrors(['password']);
 });
 
-test('login requires valid email format', function () {
+test('login requires valid email format', function (): void {
     // Arrange
     $credentials = [
         'email' => 'invalid-email',
@@ -112,7 +111,7 @@ test('login requires valid email format', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('login generates new token each time', function () {
+test('login generates new token each time', function (): void {
     // Arrange
     $user = User::factory()->create([
         'email' => 'john@example.com',

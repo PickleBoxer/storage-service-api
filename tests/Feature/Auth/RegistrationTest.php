@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-test('user can register with valid credentials', function () {
+test('user can register with valid credentials', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -35,7 +35,7 @@ test('user can register with valid credentials', function () {
     expect($response['token'])->toBeString()->not->toBeEmpty();
 });
 
-test('user cannot register with existing email', function () {
+test('user cannot register with existing email', function (): void {
     // Arrange
     $existingUser = User::factory()->create(['email' => 'existing@example.com']);
 
@@ -54,7 +54,7 @@ test('user cannot register with existing email', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('registration requires name', function () {
+test('registration requires name', function (): void {
     // Arrange
     $userData = [
         'email' => 'john@example.com',
@@ -70,7 +70,7 @@ test('registration requires name', function () {
         ->assertJsonValidationErrors(['name']);
 });
 
-test('registration requires email', function () {
+test('registration requires email', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -86,7 +86,7 @@ test('registration requires email', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('registration requires valid email format', function () {
+test('registration requires valid email format', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -103,7 +103,7 @@ test('registration requires valid email format', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('registration requires password', function () {
+test('registration requires password', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -119,7 +119,7 @@ test('registration requires password', function () {
         ->assertJsonValidationErrors(['password']);
 });
 
-test('registration requires password with minimum 8 characters', function () {
+test('registration requires password with minimum 8 characters', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -136,7 +136,7 @@ test('registration requires password with minimum 8 characters', function () {
         ->assertJsonValidationErrors(['password']);
 });
 
-test('registration requires password confirmation', function () {
+test('registration requires password confirmation', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -153,7 +153,7 @@ test('registration requires password confirmation', function () {
         ->assertJsonValidationErrors(['password']);
 });
 
-test('registered user password is hashed', function () {
+test('registered user password is hashed', function (): void {
     // Arrange
     $userData = [
         'name' => 'John Doe',
@@ -168,5 +168,5 @@ test('registered user password is hashed', function () {
     // Assert
     $user = User::where('email', 'john@example.com')->first();
     expect($user->password)->not->toBe('password123');
-    expect(password_verify('password123', $user->password))->toBeTrue();
+    expect(password_verify('password123', (string) $user->password))->toBeTrue();
 });

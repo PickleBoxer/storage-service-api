@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -15,16 +17,14 @@ class MediaCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection->map(function ($media) {
-                return [
-                    'id' => $media->id,
-                    'type' => $media->type,
-                    'title' => $media->title,
-                    'status' => $media->status,
-                    'thumbnail_url' => $media->thumbnail_url,
-                    'created_at' => $media->created_at,
-                ];
-            }),
+            'data' => $this->collection->map(fn ($media) => [
+                'id' => $media->id,
+                'type' => $media->type,
+                'title' => $media->title,
+                'status' => $media->status,
+                'thumbnail_url' => $media->thumbnail_url,
+                'created_at' => $media->created_at,
+            ]),
         ];
     }
 }

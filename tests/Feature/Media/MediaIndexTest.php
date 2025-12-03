@@ -7,7 +7,7 @@ use App\Models\User;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
-test('user can list their own media', function () {
+test('user can list their own media', function (): void {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
@@ -29,13 +29,13 @@ test('user can list their own media', function () {
     expect($response->json('data'))->toHaveCount(3);
 });
 
-test('unauthenticated user cannot list media', function () {
+test('unauthenticated user cannot list media', function (): void {
     $response = getJson('/api/media');
 
     $response->assertStatus(401);
 });
 
-test('media list returns latest first', function () {
+test('media list returns latest first', function (): void {
     $user = User::factory()->create();
 
     $oldMedia = Media::factory()->create([
@@ -59,7 +59,7 @@ test('media list returns latest first', function () {
         ->and($data[1]['title'])->toBe('Old Media');
 });
 
-test('media list includes thumbnail url', function () {
+test('media list includes thumbnail url', function (): void {
     $user = User::factory()->create();
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -74,7 +74,7 @@ test('media list includes thumbnail url', function () {
     expect($response->json('data.0.thumbnail_url'))->toContain('storage/thumbnails');
 });
 
-test('media list returns empty array when user has no media', function () {
+test('media list returns empty array when user has no media', function (): void {
     $user = User::factory()->create();
 
     $response = actingAs($user)->getJson('/api/media');
@@ -84,7 +84,7 @@ test('media list returns empty array when user has no media', function () {
     expect($response->json('data'))->toBe([]);
 });
 
-test('media list includes all statuses', function () {
+test('media list includes all statuses', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->create(['user_id' => $user->id, 'status' => MediaStatus::Pending]);
@@ -99,7 +99,7 @@ test('media list includes all statuses', function () {
     expect($response->json('data'))->toHaveCount(4);
 });
 
-test('media list shows correct data structure', function () {
+test('media list shows correct data structure', function (): void {
     $user = User::factory()->create();
     $media = Media::factory()->create([
         'user_id' => $user->id,

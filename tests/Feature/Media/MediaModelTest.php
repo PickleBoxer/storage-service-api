@@ -7,7 +7,7 @@ use App\Models\User;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-test('media can be created with required fields', function () {
+test('media can be created with required fields', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -35,7 +35,7 @@ test('media can be created with required fields', function () {
     ]);
 });
 
-test('media type is cast to MediaType enum', function () {
+test('media type is cast to MediaType enum', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -51,7 +51,7 @@ test('media type is cast to MediaType enum', function () {
         ->and($media->type->value)->toBe('video');
 });
 
-test('media status is cast to MediaStatus enum', function () {
+test('media status is cast to MediaStatus enum', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -67,7 +67,7 @@ test('media status is cast to MediaStatus enum', function () {
         ->and($media->status->value)->toBe('completed');
 });
 
-test('isPending returns true when status is pending', function () {
+test('isPending returns true when status is pending', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -84,7 +84,7 @@ test('isPending returns true when status is pending', function () {
         ->and($media->isFailed())->toBeFalse();
 });
 
-test('isProcessing returns true when status is processing', function () {
+test('isProcessing returns true when status is processing', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -101,7 +101,7 @@ test('isProcessing returns true when status is processing', function () {
         ->and($media->isFailed())->toBeFalse();
 });
 
-test('isCompleted returns true when status is completed', function () {
+test('isCompleted returns true when status is completed', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -119,7 +119,7 @@ test('isCompleted returns true when status is completed', function () {
         ->and($media->isFailed())->toBeFalse();
 });
 
-test('isFailed returns true when status is failed', function () {
+test('isFailed returns true when status is failed', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -137,7 +137,7 @@ test('isFailed returns true when status is failed', function () {
         ->and($media->isCompleted())->toBeFalse();
 });
 
-test('file_url accessor returns correct url when file_path exists', function () {
+test('file_url accessor returns correct url when file_path exists', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -151,7 +151,7 @@ test('file_url accessor returns correct url when file_path exists', function () 
     expect($media->file_url)->toContain('storage/media/images/1/test.jpg');
 });
 
-test('file_url accessor returns null when file_path is empty', function () {
+test('file_url accessor returns null when file_path is empty', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -165,7 +165,7 @@ test('file_url accessor returns null when file_path is empty', function () {
     expect($media->file_url)->toBeNull();
 });
 
-test('thumbnail_url accessor returns correct url when thumbnail_path exists', function () {
+test('thumbnail_url accessor returns correct url when thumbnail_path exists', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -180,7 +180,7 @@ test('thumbnail_url accessor returns correct url when thumbnail_path exists', fu
     expect($media->thumbnail_url)->toContain('storage/thumbnails/images/1/test_thumb.jpg');
 });
 
-test('thumbnail_url accessor returns null when thumbnail_path is null', function () {
+test('thumbnail_url accessor returns null when thumbnail_path is null', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -194,7 +194,7 @@ test('thumbnail_url accessor returns null when thumbnail_path is null', function
     expect($media->thumbnail_url)->toBeNull();
 });
 
-test('media belongs to user', function () {
+test('media belongs to user', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -209,7 +209,7 @@ test('media belongs to user', function () {
         ->and($media->user->id)->toBe($user->id);
 });
 
-test('description can be nullable', function () {
+test('description can be nullable', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -223,7 +223,7 @@ test('description can be nullable', function () {
     expect($media->description)->toBeNull();
 });
 
-test('thumbnail_path can be nullable', function () {
+test('thumbnail_path can be nullable', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -237,7 +237,7 @@ test('thumbnail_path can be nullable', function () {
     expect($media->thumbnail_path)->toBeNull();
 });
 
-test('processing_error can be nullable', function () {
+test('processing_error can be nullable', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([
@@ -251,7 +251,7 @@ test('processing_error can be nullable', function () {
     expect($media->processing_error)->toBeNull();
 });
 
-test('media has timestamps', function () {
+test('media has timestamps', function (): void {
     $user = User::factory()->create();
 
     $media = Media::create([

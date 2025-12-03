@@ -2,7 +2,6 @@
 
 use App\Enums\MediaStatus;
 use App\Enums\MediaType;
-use App\Jobs\ProcessMediaJob;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -13,12 +12,12 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\postJson;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake('public');
     Queue::fake();
 });
 
-test('authenticated user can upload image file', function () {
+test('authenticated user can upload image file', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -52,7 +51,7 @@ test('authenticated user can upload image file', function () {
     Storage::disk('public')->assertExists(Media::latest()->first()->file_path);
 });
 
-test('authenticated user can upload video file', function () {
+test('authenticated user can upload video file', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('test.mp4', 1024, 'video/mp4');
 
@@ -72,7 +71,7 @@ test('authenticated user can upload video file', function () {
     ]);
 });
 
-test('uploaded file is stored in correct directory', function () {
+test('uploaded file is stored in correct directory', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.png');
 
@@ -87,7 +86,7 @@ test('uploaded file is stored in correct directory', function () {
     Storage::disk('public')->assertExists($media->file_path);
 });
 
-test('file upload requires authentication', function () {
+test('file upload requires authentication', function (): void {
     $file = UploadedFile::fake()->image('test.jpg');
 
     $response = postJson('/api/media', [
@@ -98,7 +97,7 @@ test('file upload requires authentication', function () {
     $response->assertStatus(401);
 });
 
-test('file upload requires file', function () {
+test('file upload requires file', function (): void {
     $user = User::factory()->create();
 
     $response = actingAs($user)->postJson('/api/media', [
@@ -112,7 +111,7 @@ test('file upload requires file', function () {
         ]);
 });
 
-test('file upload requires title', function () {
+test('file upload requires title', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -127,7 +126,7 @@ test('file upload requires title', function () {
         ]);
 });
 
-test('title must not exceed 255 characters', function () {
+test('title must not exceed 255 characters', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -140,7 +139,7 @@ test('title must not exceed 255 characters', function () {
         ->assertJsonValidationErrors(['title']);
 });
 
-test('description is optional', function () {
+test('description is optional', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -155,7 +154,7 @@ test('description is optional', function () {
     expect($media->description)->toBeNull();
 });
 
-test('description must not exceed 1000 characters', function () {
+test('description must not exceed 1000 characters', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -169,7 +168,7 @@ test('description must not exceed 1000 characters', function () {
         ->assertJsonValidationErrors(['description']);
 });
 
-test('file must be valid image or video type', function () {
+test('file must be valid image or video type', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
 
@@ -185,7 +184,7 @@ test('file must be valid image or video type', function () {
         ]);
 });
 
-test('file size must not exceed 100MB', function () {
+test('file size must not exceed 100MB', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('large.jpg', 102401, 'image/jpeg'); // 100MB + 1KB
 
@@ -198,7 +197,7 @@ test('file size must not exceed 100MB', function () {
         ->assertJsonValidationErrors(['file']);
 });
 
-test('media is created with pending status', function () {
+test('media is created with pending status', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -214,7 +213,7 @@ test('media is created with pending status', function () {
         ->and($media->thumbnail_path)->toBeNull();
 });
 
-test('media belongs to authenticated user', function () {
+test('media belongs to authenticated user', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg');
 
@@ -229,7 +228,7 @@ test('media belongs to authenticated user', function () {
         ->and($media->user->id)->toBe($user->id);
 });
 
-test('filename is unique with timestamp and random string', function () {
+test('filename is unique with timestamp and random string', function (): void {
     $user = User::factory()->create();
     $file1 = UploadedFile::fake()->image('test.jpg');
     $file2 = UploadedFile::fake()->image('test.jpg');
@@ -250,7 +249,7 @@ test('filename is unique with timestamp and random string', function () {
     expect($media1->file_path)->not->toBe($media2->file_path);
 });
 
-test('image type is detected from mime type', function () {
+test('image type is detected from mime type', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.png');
 
@@ -264,7 +263,7 @@ test('image type is detected from mime type', function () {
     expect($media->type)->toBe(MediaType::Image);
 });
 
-test('video type is detected from mime type', function () {
+test('video type is detected from mime type', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('test.mp4', 1024, 'video/mp4');
 
@@ -278,7 +277,7 @@ test('video type is detected from mime type', function () {
     expect($media->type)->toBe(MediaType::Video);
 });
 
-test('multiple files can be uploaded by same user', function () {
+test('multiple files can be uploaded by same user', function (): void {
     $user = User::factory()->create();
 
     for ($i = 1; $i <= 3; $i++) {

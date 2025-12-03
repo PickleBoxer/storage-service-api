@@ -8,14 +8,14 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake('public');
 });
 
-test('job updates media status to processing when started', function () {
+test('job updates media status to processing when started', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg', 800, 600);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -33,10 +33,10 @@ test('job updates media status to processing when started', function () {
     expect($media->status)->toBe(MediaStatus::Completed);
 });
 
-test('job generates thumbnail for image', function () {
+test('job generates thumbnail for image', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg', 800, 600);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -61,7 +61,7 @@ test('job generates thumbnail for image', function () {
         ->and($imageSize[1])->toBeLessThanOrEqual(200);
 });
 
-test('job generates thumbnail for video', function () {
+test('job generates thumbnail for video', function (): void {
     // Skip this test if FFmpeg is not available
     if (! shell_exec('ffmpeg -version')) {
         $this->markTestSkipped('FFmpeg is not installed');
@@ -70,7 +70,7 @@ test('job generates thumbnail for video', function () {
     $user = User::factory()->create();
     // Create a minimal valid video file for testing
     $file = UploadedFile::fake()->create('test.mp4', 100, 'video/mp4');
-    $path = $file->store('media/videos/' . $user->id, 'public');
+    $path = $file->store('media/videos/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -84,7 +84,7 @@ test('job generates thumbnail for video', function () {
         ProcessMediaJob::dispatchSync($media);
     } catch (\Exception $e) {
         // Expected to fail with fake video file
-        $this->markTestSkipped('Cannot process fake video file: ' . $e->getMessage());
+        $this->markTestSkipped('Cannot process fake video file: '.$e->getMessage());
     }
 
     $media->refresh();
@@ -96,10 +96,10 @@ test('job generates thumbnail for video', function () {
     }
 })->skip('Requires real video file and FFmpeg');
 
-test('job sets status to completed after successful processing', function () {
+test('job sets status to completed after successful processing', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.png', 1024, 768);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -117,7 +117,7 @@ test('job sets status to completed after successful processing', function () {
         ->and($media->processing_error)->toBeNull();
 });
 
-test('job sets status to failed when processing fails', function () {
+test('job sets status to failed when processing fails', function (): void {
     $user = User::factory()->create();
 
     $media = Media::factory()->create([
@@ -130,7 +130,7 @@ test('job sets status to failed when processing fails', function () {
 
     try {
         ProcessMediaJob::dispatchSync($media);
-    } catch (\Exception $e) {
+    } catch (\Exception) {
         // Expected to throw exception
     }
 
@@ -141,10 +141,10 @@ test('job sets status to failed when processing fails', function () {
         ->and($media->processing_error)->not->toBeNull();
 });
 
-test('job stores thumbnail in correct directory structure', function () {
+test('job stores thumbnail in correct directory structure', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('my-photo.jpg', 500, 500);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -161,10 +161,10 @@ test('job stores thumbnail in correct directory structure', function () {
         ->and($media->thumbnail_path)->toEndWith('_thumb.jpg');
 });
 
-test('job creates thumbnail directory if it does not exist', function () {
+test('job creates thumbnail directory if it does not exist', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('test.jpg', 600, 400);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     // Ensure thumbnail directory doesn't exist
     Storage::disk('public')->deleteDirectory("thumbnails/images/{$user->id}");
@@ -184,11 +184,11 @@ test('job creates thumbnail directory if it does not exist', function () {
         ->and(Storage::disk('public')->directoryExists("thumbnails/images/{$user->id}"))->toBeTrue();
 });
 
-test('job maintains aspect ratio when creating thumbnail', function () {
+test('job maintains aspect ratio when creating thumbnail', function (): void {
     $user = User::factory()->create();
     // Create a wide image
     $file = UploadedFile::fake()->image('wide.jpg', 1000, 500);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -214,10 +214,10 @@ test('job maintains aspect ratio when creating thumbnail', function () {
         ->and($aspectRatio)->toBeLessThan(2.5);
 });
 
-test('job processes different image formats', function ($format, $mimeType) {
+test('job processes different image formats', function ($format, $mimeType): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image("test.{$format}", 400, 400);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -238,11 +238,11 @@ test('job processes different image formats', function ($format, $mimeType) {
     ['png', 'image/png'],
 ]);
 
-test('job handles large images correctly', function () {
+test('job handles large images correctly', function (): void {
     $user = User::factory()->create();
     // Create a large image
     $file = UploadedFile::fake()->image('large.jpg', 4000, 3000);
-    $path = $file->store('media/images/' . $user->id, 'public');
+    $path = $file->store('media/images/'.$user->id, 'public');
 
     $media = Media::factory()->create([
         'user_id' => $user->id,
@@ -265,12 +265,12 @@ test('job handles large images correctly', function () {
         ->and($imageSize[1])->toBeLessThanOrEqual(200);
 });
 
-test('job does not overwrite existing thumbnails for different media', function () {
+test('job does not overwrite existing thumbnails for different media', function (): void {
     $user = User::factory()->create();
 
     // Create first media with thumbnail
     $file1 = UploadedFile::fake()->image('first.jpg', 500, 500);
-    $path1 = $file1->store('media/images/' . $user->id, 'public');
+    $path1 = $file1->store('media/images/'.$user->id, 'public');
 
     $media1 = Media::factory()->create([
         'user_id' => $user->id,
@@ -285,7 +285,7 @@ test('job does not overwrite existing thumbnails for different media', function 
 
     // Create second media with thumbnail
     $file2 = UploadedFile::fake()->image('second.jpg', 500, 500);
-    $path2 = $file2->store('media/images/' . $user->id, 'public');
+    $path2 = $file2->store('media/images/'.$user->id, 'public');
 
     $media2 = Media::factory()->create([
         'user_id' => $user->id,
@@ -304,7 +304,7 @@ test('job does not overwrite existing thumbnails for different media', function 
         ->and(Storage::disk('public')->exists($thumbnail2))->toBeTrue();
 });
 
-test('failed method updates media status when job fails', function () {
+test('failed method updates media status when job fails', function (): void {
     $user = User::factory()->create();
 
     $media = Media::factory()->create([

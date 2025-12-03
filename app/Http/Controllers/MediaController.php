@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Enums\MediaStatus;
@@ -33,7 +35,7 @@ class MediaController extends Controller
 
         // Determine media type
         $mimeType = $file->getMimeType();
-        $type = str_starts_with($mimeType, 'image/') ? MediaType::Image : MediaType::Video;
+        $type = str_starts_with((string) $mimeType, 'image/') ? MediaType::Image : MediaType::Video;
 
         // Generate unique filename
         $timestamp = now()->timestamp;

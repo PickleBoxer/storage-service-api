@@ -5,7 +5,7 @@ use App\Enums\MediaType;
 use App\Models\Media;
 use App\Models\User;
 
-test('user has many media', function () {
+test('user has many media', function (): void {
     $user = User::factory()->create();
 
     $media1 = Media::factory()->create(['user_id' => $user->id]);
@@ -16,7 +16,7 @@ test('user has many media', function () {
         ->and($user->media->pluck('id')->toArray())->toContain($media1->id, $media2->id, $media3->id);
 });
 
-test('user media relationship returns only users media', function () {
+test('user media relationship returns only users media', function (): void {
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
 
@@ -27,7 +27,7 @@ test('user media relationship returns only users media', function () {
         ->and($user2->media)->toHaveCount(2);
 });
 
-test('user can access media relationship', function () {
+test('user can access media relationship', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->create([
@@ -41,7 +41,7 @@ test('user can access media relationship', function () {
         ->and($media->title)->toBe('Test Media');
 });
 
-test('deleting user cascades delete to media', function () {
+test('deleting user cascades delete to media', function (): void {
     $user = User::factory()->create();
 
     $media1 = Media::factory()->create(['user_id' => $user->id]);
@@ -56,7 +56,7 @@ test('deleting user cascades delete to media', function () {
         ->and(Media::find($media2->id))->toBeNull();
 });
 
-test('user media relationship can be filtered by status', function () {
+test('user media relationship can be filtered by status', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->pending()->count(2)->create(['user_id' => $user->id]);
@@ -69,7 +69,7 @@ test('user media relationship can be filtered by status', function () {
         ->and($completedMedia)->toHaveCount(3);
 });
 
-test('user media relationship can be filtered by type', function () {
+test('user media relationship can be filtered by type', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->create([
@@ -89,7 +89,7 @@ test('user media relationship can be filtered by type', function () {
         ->and($videos)->toHaveCount(1);
 });
 
-test('user media relationship can be ordered', function () {
+test('user media relationship can be ordered', function (): void {
     $user = User::factory()->create();
 
     $media1 = Media::factory()->create([
@@ -113,14 +113,14 @@ test('user media relationship can be ordered', function () {
         ->and($latestMedia->last()->id)->toBe($media1->id);
 });
 
-test('user has no media by default', function () {
+test('user has no media by default', function (): void {
     $user = User::factory()->create();
 
     expect($user->media)->toHaveCount(0)
         ->and($user->media()->count())->toBe(0);
 });
 
-test('user media relationship returns collection', function () {
+test('user media relationship returns collection', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->count(2)->create(['user_id' => $user->id]);
@@ -128,7 +128,7 @@ test('user media relationship returns collection', function () {
     expect($user->media)->toBeInstanceOf(\Illuminate\Database\Eloquent\Collection::class);
 });
 
-test('user can count media without loading relationship', function () {
+test('user can count media without loading relationship', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->count(5)->create(['user_id' => $user->id]);
@@ -138,7 +138,7 @@ test('user can count media without loading relationship', function () {
     expect($count)->toBe(5);
 });
 
-test('media relationship can be eager loaded', function () {
+test('media relationship can be eager loaded', function (): void {
     $users = User::factory()->count(3)->create();
 
     foreach ($users as $user) {
@@ -155,7 +155,7 @@ test('media relationship can be eager loaded', function () {
     }
 });
 
-test('user can access latest media', function () {
+test('user can access latest media', function (): void {
     $user = User::factory()->create();
 
     Media::factory()->create([
